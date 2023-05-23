@@ -16,9 +16,9 @@ export default function BookingsPage() {
   return (
     <div>
       <AccountNav/>
-      <div>
+      <div className="flex flex-col gap-2">
         {bookings?.length > 0 && bookings.map(booking => (
-          <Link to={`/account/bookings/${booking._id}`} key={booking} className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden">
+          <Link to={`/account/bookings/${booking._id}`} key={booking._id} className="flex gap-4 bg-gray-300 rounded-2xl overflow-hidden">
             <div className="w-48">
               <PlaceImg place={booking.place} />
             </div>

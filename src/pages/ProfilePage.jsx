@@ -32,9 +32,11 @@ export default function AccountPage() {
     <div>
       <AccountNav/>
       {subpage === 'profile' && (
-        <div className="text-center max-w-lg mx-auto">
-          Logged in as {user?.name} ({user?.email})<br />
-          <button onClick={logout}  className="primary max-w-sm mt-2">Logout</button>
+        <div className="max-w-lg mx-auto mt-10 rounded-2xl p-10 bg-slate-200">
+            <h2 className="text-center text-xl font-semibold">Your Profile</h2>
+            <p className="font-normal text-lg text-center">Logged in as {user?.name} </p> 
+            <p className="font-normal text-xs text-center">Email:{user?.email}</p><br />
+          <button onClick={logout}  className="primary max-w-sm hover:bg-gray-300 hover:text-black hover:font-bold ease-out duration-500">Logout</button>
         </div>
       )}
       {subpage === 'places' && (

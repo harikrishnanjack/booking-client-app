@@ -43,27 +43,30 @@ export default function BookingWidget({place}) {
   }
 
   return (
-    <div className="bg-white shadow p-4 rounded-2xl">
+    <div className="bg-white border shadow-2xl p-4 rounded-2xl">
       <div className="text-2xl text-center">
         Price: ${place.price} / per night
       </div>
       <div className="border rounded-2xl mt-4">
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           <div className="py-3 px-4">
             <label>Check in:</label>
             <input type="date"
+                   className="focus:outline-none border-primary"
                    value={checkIn}
                    onChange={ev => setCheckIn(ev.target.value)}/>
           </div>
           <div className="py-3 px-4 border-l">
             <label>Check out:</label>
             <input type="date" value={checkOut}
+                  className="focus:outline-none border-primary"
                    onChange={ev => setCheckOut(ev.target.value)}/>
           </div>
         </div>
         <div className="py-3 px-4 border-t">
           <label>Number of guests:</label>
           <input type="number"
+                 className="focus:outline-none border-primary"
                  value={numberOfGuests}
                  onChange={ev => setNumberOfGuests(ev.target.value)}/>
         </div>

@@ -28,20 +28,20 @@ export default function PlacePage() {
       <AddressLink>{place.address}</AddressLink>
       <PlaceGallery place={place} />
       <div className="mt-8 mb-8 grid gap-8 grid-cols-1 md:grid-cols-[2fr_1fr]">
-        <div>
+        <div className="bg-white p-5 md:p-0 shadow-lg rounded-2xl flex flex-col justify-start md:justify-center items-start md:items-center">
           <div className="my-4">
             <h2 className="font-semibold text-2xl">Description</h2>
             {place.description}
           </div>
-          Check-in: {place.checkIn}<br />
-          Check-out: {place.checkOut}<br />
-          Max number of guests: {place.maxGuests}
+          ✔️Check-in: {place.checkIn}<br />
+          ✔️Check-out: {place.checkOut}<br />
+          ✔️Max number of guests: {place.maxGuests}
         </div>
         <div>
           <BookingWidget place={place}/>
         </div>
       </div>
-      <div className="bg-white -mx-8 px-8 py-8 border-t">
+      <div className="bg-white shadow-lg border border-primary rounded-2xl -mx-8 px-8 py-8 border-t">
         <div>
           <h2 className="font-semibold text-2xl">Extra info</h2>
         </div>
