@@ -5,6 +5,8 @@ import axios from "axios";
 import Perks from "../components/Perks";
 import PhotosUploader from "../components/PhotosUploader";
 import AccountNav from "../components/AccountNav";
+import { toast } from 'react-toastify';    
+import 'react-toastify/dist/ReactToastify.css'; 
 
 export default function PlacesFormPage(){
     const {id} = useParams();
@@ -14,12 +16,11 @@ export default function PlacesFormPage(){
     const [description,setDescription] = useState('');
     const [perks,setPerks] = useState([]);
     const [extraInfo,setExtraInfo] = useState('');
-    const [checkIn,setCheckIn] = useState('');
-    const [checkOut,setCheckOut] = useState('');
+    const [checkIn,setCheckIn] = useState('12:00 PM');
+    const [checkOut,setCheckOut] = useState('11:00 AM');
     const [maxGuests,setMaxGuests] = useState(1);
     const [price,setPrice] = useState(100);
     const [redirect,setRedirect] = useState(false);
-
 
     useEffect(() => {
         if (!id) {
@@ -38,6 +39,7 @@ export default function PlacesFormPage(){
            setMaxGuests(data.maxGuests);
            setPrice(data.price);
         });
+        
       }, [id]);
 
     function inputHeader(text) {
@@ -58,23 +60,45 @@ export default function PlacesFormPage(){
           </>
         );
     }
+    function validatePlacesForm(){
+      if(
+        title.trim()==='' || 
+        address === '' || 
+        addedPhotos.length ===0 || 
+        description.trim()==='' || 
+        extraInfo.trim()==='' || 
+        checkIn.trim()==='' || 
+        checkOut.trim()==='' || 
+        perks.length === 0 || 
+        maxGuests==='' 
+      ){
+        toast.error('Please Fill All Valid Data',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+        return false;
+      }else{
+        return true;
+      }
+    }
     async function savePlace(ev) {
         ev.preventDefault();
-        const placeData = {
-          title, address, addedPhotos,
-          description, perks, extraInfo,
-          checkIn, checkOut, maxGuests, price,
-        };
-        if (id) {
-          // update
-          await axios.put('/api/places', {
-            id, ...placeData
-          });
-          setRedirect(true);
-        } else {
-          // new place
-          await axios.post('/api/places', placeData);
-          setRedirect(true);
+        if(validatePlacesForm()===true){
+          const placeData = {
+            title, address, addedPhotos,
+            description, perks, extraInfo,
+            checkIn, checkOut, maxGuests, price,
+          };
+          if (id) {
+            await axios.put('/api/places', {
+              id, ...placeData
+            });
+            setRedirect(true);
+            toast.success('Data Updated Successfully',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+          } else {
+            await axios.post('/api/places', placeData);
+            setRedirect(true);
+            toast.success('Data Added Successfully',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+          }
+        }else{
+          return;
         }
     
       }
@@ -105,11 +129,11 @@ export default function PlacesFormPage(){
             <div className="grid gap-2 sm:grid-cols-3">
                 <div>
                     <h3 className="mt-2 -mb-1">Check in time</h3>
-                    <input type="text" className="focus:outline-none border-primary" value={checkIn} onChange={ev=>setCheckIn(ev.target.value)} placeholder="14:00"/>
+                    <input type="text" disabled className="focus:outline-none border-primary" value={checkIn} onChange={ev=>setCheckIn(ev.target.value)} placeholder="14:00"/>
                 </div>
                 <div>
                     <h3 className="mt-2 -mb-1">Check out time</h3>
-                    <input type="text" className="focus:outline-none border-primary" value={checkOut} onChange={ev=>setCheckOut(ev.target.value)} placeholder="11"/>
+                    <input type="text" disabled className="focus:outline-none border-primary" value={checkOut} onChange={ev=>setCheckOut(ev.target.value)} placeholder="11"/>
                 </div>
                 <div>
                     <h3 className="mt-2 -mb-1">Max number of guests</h3>
@@ -117,7 +141,7 @@ export default function PlacesFormPage(){
                 </div>
             </div>
             <div className="my-4">
-                <button className="primary hover:bg-gray-300 hover:text-black hover:font-bold ease-out duration-500">Save</button>
+                <button className={"primary hover:bg-gray-300 hover:text-black hover:font-bold ease-out duration-500"}>Save & Add</button>
             </div>
         </form>
     </div>

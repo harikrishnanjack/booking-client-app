@@ -38,6 +38,9 @@ export default function BookingsPage() {
             </div>
           </Link>
         ))}
+        {bookings.length === 0 && (
+          <div className="flex justify-center items-center mt-24 text-primary text-lg">***No Bookings***</div>
+        )}
       </div>
     </div>
   );

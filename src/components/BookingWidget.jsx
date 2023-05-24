@@ -1,8 +1,10 @@
 import {useContext, useEffect, useState} from "react";
 import {differenceInCalendarDays} from "date-fns";
 import axios from "axios";
-import {Navigate} from "react-router-dom";
+import {Navigate,useParams} from "react-router-dom";
 import {UserContext} from "./UserContext.jsx";
+import { toast } from 'react-toastify';    
+import 'react-toastify/dist/ReactToastify.css'; 
 
 export default function BookingWidget({place}) {
   const [checkIn,setCheckIn] = useState('');
@@ -17,24 +19,57 @@ export default function BookingWidget({place}) {
     if (user) {
       setName(user.name);
     }
-  }, [user]);
 
+  }, [user]);
   let numberOfNights = 0;
   if (checkIn && checkOut) {
     numberOfNights = differenceInCalendarDays(new Date(checkOut), new Date(checkIn));
   }
 
+  function validateBookingForm(){
+    if(new Date(checkIn) > new Date(checkOut)){
+      toast.error('Please Select Valid CheckIn & CheckOut Dates',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+      return false;
+    }
+    if(numberOfGuests > place.maxGuests){
+      toast.error(`Only allowed Maximum of ${place.maxGuests} people`,{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+      return false;
+    }
+    if(checkIn==='' || checkOut === '' || numberOfGuests ==='' || numberOfGuests <= 0 || name.trim() === '' || phone==='' || phone.toString().length !== 10){
+      toast.error('Please Enter Fill All Valid Data',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+      return false;
+    }else{
+      return true;
+    }
+  }
+  const disablePastDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+    month = month < 10 ? `0${month}` : month;
+    day = day < 10 ? `0${day}` : day;
+
+    return `${year}-${month}-${day}`;
+  };
+
   async function bookThisPlace() {
     if(!user){
       setRedirect('/login');
+      toast.success('Please Login First',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
     }else{
-      const response = await axios.post('/api/bookings', {
-        checkIn,checkOut,numberOfGuests,name,phone,
-        place:place._id,
-        price:numberOfNights * place.price,
-      });
-      const bookingId = response.data._id;
-      setRedirect(`/account/bookings/${bookingId}`);
+      if(validateBookingForm()===true){
+        const response = await axios.post('/api/bookings', {
+          checkIn,checkOut,numberOfGuests,name,phone,
+          place:place._id,
+          price:numberOfNights * place.price,
+        });
+        toast.success('Booking successful',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+        const bookingId = response.data._id;
+        setRedirect(`/account/bookings/${bookingId}`);
+      }else{
+        return;
+      }
     }
   }
 
@@ -52,14 +87,15 @@ export default function BookingWidget({place}) {
           <div className="py-3 px-4">
             <label>Check in:</label>
             <input type="date"
-                   className="focus:outline-none border-primary"
+                   className="focus:outline-none border-primary cursor-pointer"
+                   min={disablePastDate()}
                    value={checkIn}
                    onChange={ev => setCheckIn(ev.target.value)}/>
           </div>
           <div className="py-3 px-4 border-l">
             <label>Check out:</label>
             <input type="date" value={checkOut}
-                  className="focus:outline-none border-primary"
+                  className="focus:outline-none border-primary cursor-pointer"
                    onChange={ev => setCheckOut(ev.target.value)}/>
           </div>
         </div>
@@ -74,10 +110,12 @@ export default function BookingWidget({place}) {
           <div className="py-3 px-4 border-t">
             <label>Your full name:</label>
             <input type="text"
+            className="focus:outline-none border-primary"
                    value={name}
                    onChange={ev => setName(ev.target.value)}/>
             <label>Phone number:</label>
             <input type="tel"
+            className="focus:outline-none border-primary"
                    value={phone}
                    onChange={ev => setPhone(ev.target.value)}/>
           </div>

@@ -1,45 +1,58 @@
-import {Link} from "react-router-dom";
+import {Link,Navigate} from "react-router-dom";
 import {useState} from "react";
 import axios from 'axios';
-
+import { useForm } from "react-hook-form";
+import { toast } from 'react-toastify';    
+import 'react-toastify/dist/ReactToastify.css'; 
 
 export default function RegisterPage(){
-    const [name,setName] = useState('');
-    const [email,setEmail] = useState('');
-    const [password,setPassword] = useState('');
-    async function registerUser(ev) {
-      ev.preventDefault();
+
+    const [redirect, setRedirect] = useState(false);
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const onSubmit =  async (datas) => {
       try {
-        await axios.post('/api/register', {
-          name,
-          email,
-          password,
-        });
-        alert('Registration successful. Now you can log in');
+        await axios.post('/api/register', datas);
+        toast.success('Registration successful',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
+        setRedirect(true);
       } catch (e) {
-        alert('Registration failed. Please try again later');
+        toast.success('Registration Fail',{ position: toast.POSITION.BOTTOM_CENTER,closeButton:true,progress:false,autoClose:true })
       }
     }
+
+    if (redirect) {
+      return <Navigate to={'/login'} />
+    }
+ 
     return (
         <div className="mt-0 md:mt-24 grow flex items-center justify-around">
-        <div className="mb-64">
+        <div className="mb-64 w-full">
           <h1 className="text-2xl font-semibold text-center mb-4">Register</h1>
-          <form className="max-w-md mx-auto" onSubmit={registerUser}>
+          <form className="max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
             <input type="text"
                    className="focus:outline-none border-primary"
                    placeholder="John Doe"
-                   value={name}
-                   onChange={ev => setName(ev.target.value)} />
+                   {...register("name",{ required: true})}
+                   />
+                   <div>
+                     {errors.name && <p className="text-red-700 text-sm">Name is required</p>}
+                   </div>
             <input type="email"
                    className="focus:outline-none border-primary"
                    placeholder="your@email.com"
-                   value={email}
-                   onChange={ev => setEmail(ev.target.value)} />
+                   {...register("email",{ required: true,pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/})}                
+                   />
+                   <div>
+                     {errors.email && <p className="text-red-700 text-sm">Please check the Email</p>}
+                   </div>
             <input type="password"
                    className="focus:outline-none border-primary"
                    placeholder="password"
-                   value={password}
-                   onChange={ev => setPassword(ev.target.value)} />
+                   {...register("password",{ required: true})}    
+                   />
+                   <div>
+                     {errors.password && <p className="text-red-700 text-sm">Password is required</p>}
+                   </div>
             <button className="primary hover:bg-gray-300 hover:text-black hover:font-bold ease-out duration-500">Register</button>
             <div className="text-center py-2 text-gray-500">
               Already a member? <Link className="text-black hover:underline ease-out duration-500" to={'/login'}>Login</Link>

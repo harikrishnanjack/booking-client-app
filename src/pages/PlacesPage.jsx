@@ -40,6 +40,9 @@ export default function PlacesPage() {
             </Link>
           ))}
         </div>
+        {places.length === 0 && (
+          <div className="flex justify-center items-center mt-24 text-primary text-lg">***No Places Available***</div>
+        )}
     </div>
   );
 }

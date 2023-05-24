@@ -13,6 +13,8 @@ import PlacesFormPage from './pages/PlacesFormPage'
 import PlacePage from './pages/PlacePage'
 import BookingsPage from './pages/BookingsPage'
 import BookingPage from './pages/BookingPage'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 axios.defaults.baseURL = 'http://localhost:4001';
 axios.defaults.withCredentials = true;
@@ -20,6 +22,7 @@ axios.defaults.withCredentials = true;
 function App() {
   return (
     <UserContextProvider>
+      <ToastContainer/>
       <Routes>
         <Route path='/' element={<Layout/>}>
           <Route index element={<IndexPage/>}/>
