@@ -8,7 +8,7 @@ export default function Header() {
 		<header className="flex justify-between">
 			<Link
 				to={'/'}
-				className="logo flex items-center gap-1">
+				className="logo flex items-center gap-1 hover:text-primary ease-out duration-100">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
