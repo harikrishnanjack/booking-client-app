@@ -1,5 +1,4 @@
 import { Link, useParams, Navigate } from 'react-router-dom';
-// import AccountNav from "../AccountNav";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Perks from '../components/Perks';
@@ -9,10 +8,37 @@ import AccountNav from '../components/AccountNav';
 import PlaceImg from '../components/PlaceImg';
 // import PlaceImg from "../PlaceImg";
 import ClipLoader from 'react-spinners/ClipLoader';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function PlacesPage() {
 	const [places, setPlaces] = useState([]);
 	let [loading, setLoading] = useState(false);
+	const [redirect, setRedirect] = useState(false);
+	const deletePlace = (id) => {
+		axios
+			.delete(`/api/user-places/${id}`)
+			.then(() => {
+				toast.success('Accomodation Deleted successfully', {
+					position: toast.POSITION.BOTTOM_CENTER,
+					closeButton: true,
+					progress: false,
+					autoClose: true,
+				});
+				setPlaces(places.filter((item) => item._id !== id));
+			})
+			.catch((error) => {
+				toast.error('Error Deleting', {
+					position: toast.POSITION.BOTTOM_CENTER,
+					closeButton: true,
+					progress: false,
+					autoClose: true,
+				});
+			});
+	};
+	const handleDelete = (id) => {
+		deletePlace(id);
+	};
 
 	useEffect(() => {
 		setLoading(true);
@@ -46,18 +72,27 @@ export default function PlacesPage() {
 			<div className="mt-4 flex flex-col gap-2">
 				{places.length > 0 &&
 					places.map((place) => (
-						<Link
-							to={'/account/places/' + place._id}
-							key={place._id}
-							className="flex cursor-pointer gap-4 bg-gray-300 p-4 rounded-2xl">
-							<div className="flex w-32 h-32 bg-gray-300">
-								<PlaceImg place={place} />
+						<div key={place._id}>
+							<div className="mt-0 flex justify-end">
+								<button
+									onClick={() => handleDelete(place._id)}
+									className="border border-primary text-primary hover:bg-primary hover:text-white ease-out duration-500 px-3 rounded-2xl">
+									Delete {place.title}
+								</button>
 							</div>
-							<div className="grow-0 shrink">
-								<h2 className="text-xl">{place.title}</h2>
-								<p className="text-sm mt-2">{place.description}</p>
-							</div>
-						</Link>
+							<Link
+								to={'/account/places/' + place._id}
+								key={place._id}
+								className="flex cursor-pointer gap-4 bg-gray-300 p-4 rounded-2xl">
+								<div className="flex w-32 h-32 bg-gray-300">
+									<PlaceImg place={place} />
+								</div>
+								<div className="grow-0 shrink">
+									<h2 className="text-xl">{place.title}</h2>
+									<p className="text-sm mt-2">{place.description}</p>
+								</div>
+							</Link>
+						</div>
 					))}
 			</div>
 			{places.length === 0 && !loading && (

@@ -28,7 +28,7 @@ export default function RegisterPage() {
 			setRedirect(true);
 			setLoading(false);
 		} catch (e) {
-			toast.success('Registration Fail', {
+			toast.error('Registration Fail', {
 				position: toast.POSITION.BOTTOM_CENTER,
 				closeButton: true,
 				progress: false,
